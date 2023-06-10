@@ -65,10 +65,15 @@ file_get_inode (struct file *file) {
 }
 
 /* Reads SIZE bytes from FILE into BUFFER,
- * starting at the file's current position.
- * Returns the number of bytes actually read,
- * which may be less than SIZE if end of file is reached.
- * Advances FILE's position by the number of bytes read. */
+ starting at the file's current position.
+ Returns the number of bytes actually read,
+ which may be less than SIZE if end of file is reached.
+ Advances FILE's position by the number of bytes read.
+FILE에서 BUFFER로 SIZE 바이트를 읽습니다,
+파일의 현재 위치에서 시작합니다.
+실제로 읽은 바이트 수를 반환합니다,
+파일 끝에 도달할 경우 SIZE보다 작을 수 있습니다.
+FILE의 위치를 읽은 바이트 수로 앞당깁니다. */
 off_t
 file_read (struct file *file, void *buffer, off_t size) {
 	off_t bytes_read = inode_read_at (file->inode, buffer, size, file->pos);
@@ -87,12 +92,19 @@ file_read_at (struct file *file, void *buffer, off_t size, off_t file_ofs) {
 }
 
 /* Writes SIZE bytes from BUFFER into FILE,
- * starting at the file's current position.
- * Returns the number of bytes actually written,
- * which may be less than SIZE if end of file is reached.
- * (Normally we'd grow the file in that case, but file growth is
- * not yet implemented.)
- * Advances FILE's position by the number of bytes read. */
+ starting at the file's current position.
+ Returns the number of bytes actually written,
+ which may be less than SIZE if end of file is reached.
+ (Normally we'd grow the file in that case, but file growth is
+ not yet implemented.)
+ Advances FILE's position by the number of bytes read. 
+ BUFFER에서 FILE로 SIZE 바이트 쓰기,
+파일의 현재 위치에서 시작합니다.
+실제로 쓴 바이트 수를 반환합니다,
+파일 끝에 도달할 경우 SIZE보다 작을 수 있습니다.
+(일반적으로 이 경우 파일을 확장할 수 있지만 파일 확장은
+아직 구현되지 않았습니다.)
+FILE의 위치를 읽은 바이트 수로 앞당깁니다.*/
 off_t
 file_write (struct file *file, const void *buffer, off_t size) {
 	off_t bytes_written = inode_write_at (file->inode, buffer, size, file->pos);
@@ -144,7 +156,7 @@ file_length (struct file *file) {
 }
 
 /* Sets the current position in FILE to NEW_POS bytes from the
- * start of the file. */
+ start of the file. 파일에서의 현재 위치를 NEW_POS 바이트로 설정*/
 void
 file_seek (struct file *file, off_t new_pos) {
 	ASSERT (file != NULL);

@@ -177,7 +177,7 @@ void thread_print_stats(void)
    PRIORITY, but no actual priority scheduling is implemented.
    Priority scheduling is the goal of Problem 1-3. */
 tid_t thread_create(const char *name, int priority, thread_func *function, void *aux)
-// 인자: 실행할 함수의 이름, 기본 우선순위, 함수 이름, 보조 매개변수
+// 인자: 스레드 이름, 기본 우선순위, 실행할 함수 이름, 보조 매개변수
 {
 	struct thread *t;
 	tid_t tid;
@@ -203,7 +203,10 @@ tid_t thread_create(const char *name, int priority, thread_func *function, void 
 	t->tf.ss = SEL_KDSEG;
 	t->tf.cs = SEL_KCSEG;
 	t->tf.eflags = FLAG_IF;
-
+	list_push_back(&thread_current()->child_list, &t->child_elem);
+	t->fdt = palloc_get_multiple(PAL_ZERO,FDT_PAGES);
+	if(t->fdt == NULL)
+		return TID_ERROR;
 	/* Add to run queue. */
 	thread_unblock(t);
 	preempt_priority();
@@ -494,6 +497,13 @@ init_thread(struct thread *t, const char *name, int priority)
 	t->init_priority = priority;
 	t->wait_on_lock = NULL;
 	list_init(&(t->donations));
+
+	t->exit_status = 0;
+	t->next_fd = 2;
+	sema_init(&t->load_sema, 0);
+	sema_init(&t->exit_sema, 0);
+	sema_init(&t->wait_sema, 0);
+	list_init(&(t->child_list));
 }
 
 /* Chooses and returns the next thread to be scheduled.  Should

@@ -39,9 +39,11 @@ process_init(void)
  * before process_create_initd() returns. Returns the initd's
  * thread id, or TID_ERROR if the thread cannot be created.
  * Notice that THIS SHOULD BE CALLED ONCE. */
+
+
 tid_t process_create_initd(const char *file_name)
 {
-	char *fn_copy;
+	char *fn_copy;			//filename을 복사하기 위한 임시 버퍼
 	tid_t tid;
 
 	/* Make a copy of FILE_NAME.
@@ -49,11 +51,9 @@ tid_t process_create_initd(const char *file_name)
 	fn_copy = palloc_get_page(0);
 	if (fn_copy == NULL)
 		return TID_ERROR;
-	strlcpy(fn_copy, file_name, PGSIZE);
-	// fn_copy -> 첫번째 공백 전까지 parsing한 값으로 변경하기
-	char *save_ptr;
-	strtok_r(file_name, " ", &save_ptr);
-	/* Create a new thread to execute FILE_NAME. */
+	strlcpy(fn_copy, file_name, PGSIZE);		//문자열을 복사
+	char *save_ptr;								
+	strtok_r(file_name, " ", &save_ptr);		//문자열을 " " 단위로 분리, 포인터별로 저장
 	tid = thread_create(file_name, PRI_DEFAULT, initd, fn_copy);
 	if (tid == TID_ERROR)
 		palloc_free_page(fn_copy);
